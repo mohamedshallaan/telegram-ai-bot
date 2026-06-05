@@ -1,7 +1,7 @@
 import os
 from openai import OpenAI
 from telegram import Update
-from telegram.ext import Application, MessageHandler, ContextTypes, filters
+from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -20,10 +20,13 @@ async def reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
         response.choices[0].message.content
     )
 
-app = Application.builder().token(
+app = ApplicationBuilder().token(
     os.getenv("TELEGRAM_TOKEN")
 ).build()
 
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, reply))
+app.add_handler(
+    MessageHandler(filters.TEXT & ~filters.COMMAND, reply)
+)
 
-app.run_polling()
+if __name__ == "__main__":
+    app.run_polling()
